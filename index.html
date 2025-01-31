@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            transition: background-color 0.4s ease;
+        }
+        body.rest-mode {
+            background-color: #ffe6e6;  /* Light red for rest mode */
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #timer {
+            font-size: 4rem;
+            margin: 1rem 0;
+        }
+        button {
+            font-size: 1.1rem;
+            margin: 0.5rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #startBtn {
+            background-color: #4CAF50;  /* Green */
+        }
+        #resetBtn {
+            background-color: #f44336;  /* Red */
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #mode {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #4CAF50;  /* Green for work mode by default */
+        }
+        h1 {
+            margin-top: 0;
+            color: #333;
+        }
+        /* Toggle switch styling */
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #4CAF50;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #f44336;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .mode-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        #modeBtn {
+            background-color: #2196F3;  /* Blue */
+            display: block;
+            margin: 1rem auto;
+            width: 200px;
+        }
+        .button-container {
+            margin: 1rem 0;
+        }
+        .shortcuts {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pomodoro Timer</h1>
+        <div id="mode">Time to Work!</div>
+        <div id="timer">25:00</div>
+        <button id="startBtn">Start</button>
+        <button id="resetBtn">Reset</button>
+        <div class="mode-toggle">
+            <span class="mode-label">Work</span>
+            <label class="switch">
+                <input type="checkbox" id="modeToggle">
+                <span class="slider"></span>
+            </label>
+            <span class="mode-label">Rest</span>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
