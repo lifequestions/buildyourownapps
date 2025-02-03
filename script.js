@@ -178,11 +178,20 @@ class PomodoroTimer {
         // Update timer display
         this.timerDisplay.textContent = timeString;
         
-        // Update document title
-        document.title = `${timeString} - ${this.isWorkTime ? 'Work' : 'Rest'} - Pomodoro Timer`;
+        // Get current task if it exists
+        const currentTask = window.currentTask || '';
         
-        // Update mode display
-        this.modeDisplay.textContent = this.isWorkTime ? 'Time to Work!' : 'Time to Rest!';
+        // Update document title with task if it exists
+        document.title = currentTask ? 
+            `${timeString} - ${currentTask} - Pomodoro Timer` :
+            `${timeString} - ${this.isWorkTime ? 'Work' : 'Rest'} - Pomodoro Timer`;
+        
+        // Update mode display with task if it exists
+        if (this.isWorkTime && currentTask) {
+            this.modeDisplay.textContent = `Time to Work on ${currentTask}!`;
+        } else {
+            this.modeDisplay.textContent = this.isWorkTime ? 'Time to Work!' : 'Time to Rest!';
+        }
         this.modeDisplay.style.color = this.isWorkTime ? '#4CAF50' : '#f44336';
     }
 }
@@ -195,9 +204,10 @@ window.onload = function() {
     const modal = document.getElementById('taskModal');
     const taskInput = document.getElementById('taskInput');
     const startFocusBtn = document.getElementById('startFocusBtn');
-    const modeDiv = document.getElementById('mode');
     const closeBtn = document.querySelector('.close');
-    let currentTask = ''; // Store the current task
+    
+    // Make currentTask globally accessible
+    window.currentTask = '';
 
     // Show modal and focus input when page loads
     modal.style.display = 'block';
@@ -207,35 +217,13 @@ window.onload = function() {
     function closeModal() {
         const task = taskInput.value.trim();
         if (task) {
-            currentTask = task; // Store the task
-            updateModeText(task);
-            document.title = `(25:00) ${task} - Pomodoro Timer`;
+            window.currentTask = task;
         } else {
-            currentTask = ''; // No task
-            modeDiv.textContent = "Time to Work!";
-            document.title = "Pomodoro Timer";
+            window.currentTask = '';
         }
         modal.style.display = 'none';
+        pomodoro.updateDisplay(); // Update the display with new task
     }
-
-    // Function to update mode text
-    function updateModeText(task) {
-        if (task) {
-            modeDiv.textContent = `Time to Work on ${task}!`;
-        } else {
-            modeDiv.textContent = "Time to Work!";
-        }
-    }
-
-    // Override any existing mode text updates in the timer
-    const originalSetMode = PomodoroTimer.prototype.setMode;
-    PomodoroTimer.prototype.setMode = function(isWorkTime) {
-        if (currentTask) {
-            updateModeText(currentTask);
-        } else {
-            originalSetMode.call(this, isWorkTime);
-        }
-    };
 
     // Close button click
     closeBtn.addEventListener('click', closeModal);
@@ -262,13 +250,5 @@ window.onload = function() {
         if (e.key === 'Enter') {
             closeModal();
         }
-    });
-
-    // Prevent the mode text from changing when timer starts
-    const startBtn = document.getElementById('startBtn');
-    startBtn.addEventListener('click', function(e) {
-        // Don't change the mode text here
-        // The text should stay as is
-        e.stopPropagation(); // Prevent any default text changes
     });
 }; 
