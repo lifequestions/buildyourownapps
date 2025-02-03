@@ -188,4 +188,87 @@ class PomodoroTimer {
 }
 
 // Initialize the timer
-const pomodoro = new PomodoroTimer(); 
+const pomodoro = new PomodoroTimer();
+
+// Add this at the start of your script
+window.onload = function() {
+    const modal = document.getElementById('taskModal');
+    const taskInput = document.getElementById('taskInput');
+    const startFocusBtn = document.getElementById('startFocusBtn');
+    const modeDiv = document.getElementById('mode');
+    const closeBtn = document.querySelector('.close');
+    let currentTask = ''; // Store the current task
+
+    // Show modal and focus input when page loads
+    modal.style.display = 'block';
+    taskInput.focus();
+
+    // Close modal functions
+    function closeModal() {
+        const task = taskInput.value.trim();
+        if (task) {
+            currentTask = task; // Store the task
+            updateModeText(task);
+            document.title = `(25:00) ${task} - Pomodoro Timer`;
+        } else {
+            currentTask = ''; // No task
+            modeDiv.textContent = "Time to Work!";
+            document.title = "Pomodoro Timer";
+        }
+        modal.style.display = 'none';
+    }
+
+    // Function to update mode text
+    function updateModeText(task) {
+        if (task) {
+            modeDiv.textContent = `Time to Work on ${task}!`;
+        } else {
+            modeDiv.textContent = "Time to Work!";
+        }
+    }
+
+    // Override any existing mode text updates in the timer
+    const originalSetMode = PomodoroTimer.prototype.setMode;
+    PomodoroTimer.prototype.setMode = function(isWorkTime) {
+        if (currentTask) {
+            updateModeText(currentTask);
+        } else {
+            originalSetMode.call(this, isWorkTime);
+        }
+    };
+
+    // Close button click
+    closeBtn.addEventListener('click', closeModal);
+
+    // Click outside modal
+    window.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Start focus button click
+    startFocusBtn.addEventListener('click', closeModal);
+
+    // Enter key to submit
+    taskInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            closeModal();
+        }
+    });
+
+    // Prevent the mode text from changing when timer starts
+    const startBtn = document.getElementById('startBtn');
+    startBtn.addEventListener('click', function(e) {
+        // Don't change the mode text here
+        // The text should stay as is
+        e.stopPropagation(); // Prevent any default text changes
+    });
+}; 
